@@ -1,0 +1,224 @@
+openapi: 3.0.3
+info:
+  title: Transacthost backend service - OpenAPI 3.0
+  description: |-
+    This is the Transacthost service API based on the OpenAPI 3.0 specification.
+  contact:
+    email: zambo.attila@brics-soft.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://bricsapp.hu:3006/api/v1
+tags:
+  - name: Authorization
+    description: Endpoints about your Auth
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: Topics
+    description: Access to DC topics
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authorization
+      summary: Login into TH API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInfo'
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseInfo'
+        '401':
+          description: Login failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo'
+        '403':
+          description: Unverified login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo' 
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo'
+  /auth/verify:
+    post:
+      tags:
+        - Authorization
+      summary: Verify TH API access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenInfo'
+      responses:
+        '200':
+          description: Access Token valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponseInfo'
+        '401':
+          description: Access Token invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo' 
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo'         
+  /auth/refreshToken:
+    post:
+      tags:
+        - Authorization
+      summary: Refresh access token for TH API user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenInfo'
+      responses:
+        '200':
+          description: Valid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseInfoAT'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponseInfo'         
+components:
+  schemas:
+    LoginInfo:
+      type: object
+      required:
+        - userName
+        - password
+      properties:
+        userName:
+          type: string
+          example: "info@teszt.hu"
+        password:
+          type: string
+          example: "12345"
+      xml:
+        name: loginInfo
+    BaseResponseInfo:
+      type: object
+      properties:
+        responseInfo:
+          type: object
+          properties:
+            error:
+              type: boolean
+            message:
+              type: string  
+    LoginResponseInfo:
+      type: object
+      properties:
+        responseInfo:
+          type: object
+          properties:
+            error:
+              type: boolean
+            message:
+              type: string
+            accessToken:
+              type: string
+            refreshToken:
+              type: string  
+    LoginResponseInfoAT:
+      type: object
+      properties:
+        responseInfo:
+          type: object
+          properties:
+            error:
+              type: boolean
+            message:
+              type: string
+            accessToken:
+              type: string
+      xml:
+        name: loginResponseInfoAT    
+    VerifyResponseInfo:
+      type: object
+      properties:
+        responseInfo:
+          type: object
+          properties:
+            error:
+              type: boolean
+            message:
+              type: string 
+            user:
+              type: object
+              properties:
+                userId:
+                  type: string
+                companyId:
+                  type: string
+                roles:
+                  type: array
+                  items:
+                    type: string
+                isActive:
+                  type: boolean
+                isVerified:
+                  type: boolean
+                iat:
+                  type: integer
+                exp:
+                  type: integer  
+      xml:
+        name: verifyResponseInfo
+    TokenInfo:
+      type: object
+      required:
+        - accessToken
+      properties:
+        accessToken:
+          type: string
+      xml:
+        name: tokenInfo
+    RefreshTokenInfo:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+      xml:
+        name: refreshTokenInfo
