@@ -1,0 +1,6 @@
+[login page](/public/images/1.png)
+[Dashboard](/public/images/2.png)
+[Partnership page](/public/images/3.png)
+[Profile Setting page](/public/images/4.png)
+[Profile Setting login details](/public/images/5.png)
+[Profile Settings Contact Members](/public/images/6.png)
